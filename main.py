@@ -18,9 +18,9 @@ def get_comic(random_number):
     url = f'https://xkcd.com/{random_number}/info.0.json'
     response = requests.get(url)
     response.raise_for_status()
-    response_json = response.json()
-    url_image = response_json["img"]
-    autor_comment = response_json["alt"]
+    comic_response = response.json()
+    url_image = comic_response["img"]
+    autor_comment = comic_response["alt"]
     return url_image, autor_comment
 
 
