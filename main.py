@@ -18,8 +18,9 @@ def get_comic(random_number):
     url = f'https://xkcd.com/{random_number}/info.0.json'
     response = requests.get(url)
     response.raise_for_status()
-    url_image = response.json()["img"]
-    autor_comment = response.json()["alt"]
+    response_json = response.json()
+    url_image = response_json["img"]
+    autor_comment = response_json["alt"]
     return url_image, autor_comment
 
 
@@ -30,9 +31,7 @@ def download_image(url, filename, params=None):
         file.write(response.content)
 
 
-def publish_comic(autor_comment):
-    chat_id = os.environ["TG_CHAT_ID"]
-    token = os.environ["TG_TOKEN"]
+def publish_comic(autor_comment, token, chat_id):
     bot = telegram.Bot(token)
     with open("comic.png", "rb") as file:
         bot.send_photo(chat_id, photo=file, caption=autor_comment)
@@ -40,12 +39,14 @@ def publish_comic(autor_comment):
 
 def main():
     load_dotenv()
+    chat_id = os.environ["TG_CHAT_ID"]
+    token = os.environ["TG_TOKEN"]    
     filename = "comic.png"
     try:
         random_number = get_random_number()
         url_comic,comment = get_comic(random_number)
         download_image(url_comic, filename)
-        publish_comic(comment)
+        publish_comic(comment, chat_id, token)
     finally:   
         os.remove(filename)
 
